@@ -13,7 +13,7 @@ namespace BomberGame
         private const bool VerticalSyncEnabled = true;
         private static readonly Color ClearColor = Color.White;
 
-        private const int GameBoardSize = 10;
+        private const int GameBoardSize = 25;
 
         public static RenderWindow Window;
 
