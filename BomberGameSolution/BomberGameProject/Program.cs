@@ -1,6 +1,7 @@
 ﻿using BomberGame.Classes;
 using SFML.Graphics;
 using System;
+using EventHandler = BomberGame.Classes.EventHandler;
 using VideoMode = SFML.Window.VideoMode;
 
 namespace BomberGame
@@ -17,7 +18,7 @@ namespace BomberGame
 
         public static RenderWindow Window;
 
-        private static WindowEventHandler windowEventHandler;
+        private static EventHandler eventHandler;
         private static GameHandler gameHandler;
 
         static void Main()
@@ -27,7 +28,7 @@ namespace BomberGame
 
             ContentHandler.Load();
 
-            windowEventHandler = new WindowEventHandler(Window);
+            eventHandler = new EventHandler(Window);
 
             gameHandler = new GameHandler(GameBoardSize);
 

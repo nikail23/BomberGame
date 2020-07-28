@@ -6,11 +6,11 @@ using System.Text;
 
 namespace BomberGame.Classes
 {
-    public class WindowEventHandler
+    public class EventHandler
     {
         private RenderWindow window;
 
-        public WindowEventHandler(RenderWindow window)
+        public EventHandler(RenderWindow window)
         {
             this.window = window;
             window.KeyPressed += HandleKeyPressing;
@@ -28,7 +28,7 @@ namespace BomberGame.Classes
             window.Close();
         }
 
-        private void HandleKeyPressing(object sender, SFML.Window.KeyEventArgs e)
+        private void HandleKeyPressing(object sender, KeyEventArgs e)
         {
             if (e.Code == Keyboard.Key.Escape)
             {

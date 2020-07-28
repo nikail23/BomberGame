@@ -1,4 +1,5 @@
 ﻿using SFML.Graphics;
+using SFML.System;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,19 +24,19 @@ namespace BomberGame.Classes
         private const int DestroyedBlockTileHorizontalNumber = 4;
         private const int DestroyedBlockTileVerticalNumber = 3;
 
-        public TileType tileType { get; private set; }
+        public TileType TileType { get; private set; }
 
         private RectangleShape rectangleShape;
 
         public Tile(TileType tileType)
         {
-            rectangleShape = new RectangleShape(new SFML.System.Vector2f(TileSize, TileSize));
+            rectangleShape = new RectangleShape(new Vector2f(TileSize, TileSize));
 
-            this.tileType = tileType;
+            this.TileType = tileType;
             switch (tileType)
             {
                 case TileType.GRASS:
-                    rectangleShape.Texture = ContentHandler.texture;
+                    rectangleShape.Texture = ContentHandler.Texture;
                     rectangleShape.TextureRect = new IntRect(
                         GrassTileHorizontalNumber * TileSize, 
                         GrassTileVerticalNumber * TileSize, 
@@ -44,7 +45,7 @@ namespace BomberGame.Classes
                    );
                     break;
                 case TileType.INDESTRUCTIBLE_BLOCK:
-                    rectangleShape.Texture = ContentHandler.texture;
+                    rectangleShape.Texture = ContentHandler.Texture;
                     rectangleShape.TextureRect = new IntRect(
                         IndestructibleBlockTileHorizontalNumber * TileSize, 
                         IndestructibleBlockTileVerticalNumber * TileSize, 
@@ -53,7 +54,7 @@ namespace BomberGame.Classes
                     );
                     break;
                 case TileType.DESTROYED_BLOCK:
-                    rectangleShape.Texture = ContentHandler.texture;
+                    rectangleShape.Texture = ContentHandler.Texture;
                     rectangleShape.TextureRect = new IntRect(
                         DestroyedBlockTileHorizontalNumber * TileSize,
                         DestroyedBlockTileVerticalNumber * TileSize,

@@ -9,7 +9,7 @@ namespace BomberGame.Classes
     public class GameBoard : Transformable, Drawable
     {
         private Tile[][] tiles;
-        private int boardSize;
+        public int boardSize { get; private set; }
 
         public GameBoard(int boardSize)
         {
@@ -66,6 +66,15 @@ namespace BomberGame.Classes
         {
             tiles[x][y] = new Tile(type);
             tiles[x][y].Position = new Vector2f(x * Tile.TileSize, y * Tile.TileSize);
+        }
+
+        public Tile GetTile(int x, int y)
+        {
+            if (x > -1 && x < boardSize && y > -1 && y < boardSize)
+            {
+                return tiles[x][y];
+            }
+            return null;
         }
 
         public void Draw(RenderTarget target, RenderStates states)

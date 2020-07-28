@@ -11,13 +11,13 @@ namespace BomberGame.Classes
     {
         public static readonly string TexturesFolderPath = Directory.GetCurrentDirectory() + "\\Textures\\";
 
-        public static Texture texture;
+        public static Texture Texture;
 
         public static void Load()
         {
             try 
             {
-                texture = new Texture(TexturesFolderPath + "tiles.png");
+                Texture = new Texture(TexturesFolderPath + "tiles.png");
             }
             catch
             {
