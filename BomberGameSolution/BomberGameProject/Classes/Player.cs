@@ -9,22 +9,22 @@ using System.Text;
 
 namespace BomberGameProject.Classes
 {
-    public class Player: Transformable, Drawable
+    public class Player : AnimatedGameObject
     {
         private const int PlayerTextureHorizontalNumber = 4;
         private const int PlayerTextureVerticalNumber = 0;
 
+        // подобавлять константы для анимации игрока
+
         private const float PlayerMovementSpeed = 0.8f;
 
         public Vector2f StartPosition;
-
         private Vector2f movement;
-        private RectangleShape rectangleShape;
+
         private GameBoard gameBoard;
 
         public Player(GameBoard gameBoard)
         {
-            rectangleShape = new RectangleShape(new Vector2f(Tile.TileSize, Tile.TileSize));
             rectangleShape.Texture = ContentHandler.Texture;
             rectangleShape.TextureRect = new IntRect(
                 PlayerTextureHorizontalNumber * Tile.TileSize, 
@@ -44,7 +44,6 @@ namespace BomberGameProject.Classes
         public void Update()
         {
             UpdateMovement();
-
             Position += movement;
         }
 
@@ -59,8 +58,9 @@ namespace BomberGameProject.Classes
             {
                 if (isMoveUp)
                 {
-                    if (CheckUpTile())
+                    if (CheckUpTiles())
                     {
+                        SetAnimation(1, 3, 6);
                         movement.X = 0;
                         movement.Y = -1 * PlayerMovementSpeed;
                     }
@@ -69,22 +69,11 @@ namespace BomberGameProject.Classes
                         StopMovement();
                     }
                 }
-                if (isMoveLeft)
-                {
-                    if (CheckLeftTile())
-                    {
-                        movement.X = -1 * PlayerMovementSpeed;
-                        movement.Y = 0;
-                    }
-                    else
-                    {
-                        StopMovement();
-                    }
-                }
                 if (isMoveDown)
                 {
-                    if (CheckDownTile())
+                    if (CheckDownTiles())
                     {
+                        SetAnimation(0, 3, 6);
                         movement.X = 0;
                         movement.Y = PlayerMovementSpeed;
                     }
@@ -93,10 +82,24 @@ namespace BomberGameProject.Classes
                         StopMovement();
                     }
                 }
+                if (isMoveLeft)
+                {
+                    if (CheckLeftTiles())
+                    {
+                        SetAnimation(0, 0, 3);
+                        movement.X = -1 * PlayerMovementSpeed;
+                        movement.Y = 0;
+                    }
+                    else
+                    {
+                        StopMovement();
+                    }
+                }
                 if (isMoveRight)
                 {
-                    if (CheckRightTile())
+                    if (CheckRightTiles())
                     {
+                        SetAnimation(1, 0, 3);
                         movement.X = PlayerMovementSpeed;
                         movement.Y = 0;
                     }
@@ -105,6 +108,7 @@ namespace BomberGameProject.Classes
                         StopMovement();
                     }
                 }
+                HandleAnimation();
             }
             else
             {
@@ -116,9 +120,15 @@ namespace BomberGameProject.Classes
         {
             movement.X = 0;
             movement.Y = 0;
+            rectangleShape.TextureRect = new IntRect(
+                PlayerTextureHorizontalNumber * Tile.TileSize, 
+                PlayerTextureVerticalNumber * Tile.TileSize, 
+                Tile.TileSize, 
+                Tile.TileSize
+            );
         }
 
-        private bool CheckLeftTile()
+        private bool CheckLeftTiles()
         {
             var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
             var playerTileY =(int)Math.Round(Position.Y / Tile.TileSize);
@@ -147,7 +157,7 @@ namespace BomberGameProject.Classes
             return true;
         }
 
-        private bool CheckUpTile()
+        private bool CheckUpTiles()
         {
             var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
             var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
@@ -176,7 +186,7 @@ namespace BomberGameProject.Classes
             return true;
         }
 
-        private bool CheckDownTile()
+        private bool CheckDownTiles()
         {
             var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
             var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
@@ -205,7 +215,7 @@ namespace BomberGameProject.Classes
             return true;
         }
 
-        private bool CheckRightTile()
+        private bool CheckRightTiles()
         {
             var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
             var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
@@ -232,12 +242,6 @@ namespace BomberGameProject.Classes
                 return false;
             }
             return true;
-        }
-
-        public void Draw(RenderTarget target, RenderStates states)
-        {
-            states.Transform *= Transform;
-            target.Draw(rectangleShape, states);
         }
     }
 }

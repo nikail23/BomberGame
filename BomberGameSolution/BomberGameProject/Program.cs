@@ -1,5 +1,6 @@
 ﻿using BomberGame.Classes;
 using SFML.Graphics;
+using SFML.Window;
 using System;
 using EventHandler = BomberGame.Classes.EventHandler;
 using VideoMode = SFML.Window.VideoMode;
@@ -29,6 +30,7 @@ namespace BomberGame
             ContentHandler.Load();
 
             eventHandler = new EventHandler(Window);
+            Window.KeyPressed += Window_KeyPressed;
 
             gameHandler = new GameHandler(GameBoardSize);
 
@@ -39,6 +41,14 @@ namespace BomberGame
                 Window.Clear(ClearColor);
                 gameHandler.Draw();
                 Window.Display();
+            }
+        }
+
+        private static void Window_KeyPressed(object sender, KeyEventArgs e)
+        {
+            if (e.Code == Keyboard.Key.R)
+            {
+                gameHandler = new GameHandler(GameBoardSize);
             }
         }
     }
