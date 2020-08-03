@@ -1,4 +1,5 @@
 ﻿using BomberGameProject.Classes;
+using BomberGameProject.Classes.AbstractClasses;
 using SFML.Graphics;
 using SFML.System;
 using System;
@@ -14,54 +15,60 @@ namespace BomberGame.Classes
         DESTROYED_BLOCK
     }
 
-    public class Tile : GameObject
+    public class Tile : TexturedGameObject
     {
         public static int TileSize = 16;
 
         private const int GrassTileHorizontalNumber = 0;
         private const int GrassTileVerticalNumber = 13;
-        private const int IndestructibleBlockTileHorizontalNumber = 3;
-        private const int IndestructibleBlockTileVerticalNumber = 3;
-        private const int DestroyedBlockTileHorizontalNumber = 4;
-        private const int DestroyedBlockTileVerticalNumber = 3;
+        private const int IndestructibleTileHorizontalNumber = 3;
+        private const int IndestructibleTileVerticalNumber = 3;
+        private const int DestroyedTileHorizontalNumber = 4;
+        private const int DestroyedTileVerticalNumber = 3;
 
-        public TileType TileType { get; private set; }
+        public TileType Type { get; private set; }
 
         public Tile(TileType tileType)
         {
             rectangleShape = new RectangleShape(new Vector2f(TileSize, TileSize));
 
-            this.TileType = tileType;
+            this.Type = tileType;
             switch (tileType)
             {
                 case TileType.GRASS:
-                    rectangleShape.Texture = ContentHandler.Texture;
-                    rectangleShape.TextureRect = new IntRect(
-                        GrassTileHorizontalNumber * TileSize, 
+                    SetTexture(
+                        ContentHandler.Texture, 
+                        GrassTileHorizontalNumber * TileSize,
                         GrassTileVerticalNumber * TileSize, 
-                        TileSize, 
+                        TileSize,
                         TileSize
-                   );
+                    );
                     break;
                 case TileType.INDESTRUCTIBLE_BLOCK:
-                    rectangleShape.Texture = ContentHandler.Texture;
-                    rectangleShape.TextureRect = new IntRect(
-                        IndestructibleBlockTileHorizontalNumber * TileSize, 
-                        IndestructibleBlockTileVerticalNumber * TileSize, 
-                        TileSize, 
+                    SetTexture(
+                        ContentHandler.Texture,
+                        IndestructibleTileHorizontalNumber * TileSize,
+                        IndestructibleTileVerticalNumber * TileSize,
+                        TileSize,
                         TileSize
                     );
                     break;
                 case TileType.DESTROYED_BLOCK:
-                    rectangleShape.Texture = ContentHandler.Texture;
-                    rectangleShape.TextureRect = new IntRect(
-                        DestroyedBlockTileHorizontalNumber * TileSize,
-                        DestroyedBlockTileVerticalNumber * TileSize,
+                    SetTexture(
+                        ContentHandler.Texture,
+                        DestroyedTileHorizontalNumber * TileSize,
+                        DestroyedTileVerticalNumber * TileSize,
                         TileSize,
                         TileSize
                     );
                     break;
             }
+        }
+
+        public void Destroy()
+        {
+            rectangleShape.Dispose();
+            rectangleShape = null;
         }
     }
 }

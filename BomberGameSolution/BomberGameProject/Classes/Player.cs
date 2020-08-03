@@ -1,39 +1,49 @@
 ﻿using BomberGame.Classes;
+using BomberGameProject.Classes.AbstractClasses;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+using System.Drawing;
 
 namespace BomberGameProject.Classes
 {
+    public enum TilePositionType
+    {
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    }
+
     public class Player : AnimatedGameObject
     {
         private const int PlayerTextureHorizontalNumber = 4;
         private const int PlayerTextureVerticalNumber = 0;
 
-        // подобавлять константы для анимации игрока
+        public event AddBombDelegate AddBombEvent;
 
         private const float PlayerMovementSpeed = 0.8f;
 
         public Vector2f StartPosition;
         private Vector2f movement;
+        private int maxActiveBombsCount;
 
         private GameBoard gameBoard;
 
         public Player(GameBoard gameBoard)
         {
-            rectangleShape.Texture = ContentHandler.Texture;
-            rectangleShape.TextureRect = new IntRect(
-                PlayerTextureHorizontalNumber * Tile.TileSize, 
-                PlayerTextureVerticalNumber * Tile.TileSize, 
-                Tile.TileSize, 
+            SetTexture(
+                ContentHandler.Texture,
+                PlayerTextureHorizontalNumber * Tile.TileSize,
+                PlayerTextureVerticalNumber * Tile.TileSize,
+                Tile.TileSize,
                 Tile.TileSize
             );
 
             this.gameBoard = gameBoard;
+            maxActiveBombsCount = 1;
         }
 
         public void Spawn()
@@ -43,8 +53,24 @@ namespace BomberGameProject.Classes
 
         public void Update()
         {
+            UpdateBombPlacing();
             UpdateMovement();
             Position += movement;
+        }
+
+        private void UpdateBombPlacing()
+        {
+            if (Keyboard.IsKeyPressed(Keyboard.Key.Space))
+            {
+                PlaceBomb();
+            }
+        }
+
+        private void PlaceBomb()
+        {
+            var playerCoordinates = GetPlayerCoordinates();
+            AddBombEvent(playerCoordinates);
+            
         }
 
         private void UpdateMovement()
@@ -58,9 +84,13 @@ namespace BomberGameProject.Classes
             {
                 if (isMoveUp)
                 {
-                    if (CheckUpTiles())
+                    if (CheckTile(TilePositionType.UP))
                     {
-                        SetAnimation(1, 3, 6);
+                        var frames = new List<AnimationFrame>();
+                        frames.Add(new AnimationFrame(new Point(3 * Tile.TileSize, 1 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(4 * Tile.TileSize, 1 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(5 * Tile.TileSize, 1 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        SetAnimation(frames);
                         movement.X = 0;
                         movement.Y = -1 * PlayerMovementSpeed;
                     }
@@ -71,9 +101,13 @@ namespace BomberGameProject.Classes
                 }
                 if (isMoveDown)
                 {
-                    if (CheckDownTiles())
+                    if (CheckTile(TilePositionType.DOWN))
                     {
-                        SetAnimation(0, 3, 6);
+                        var frames = new List<AnimationFrame>();
+                        frames.Add(new AnimationFrame(new Point(3 * Tile.TileSize, 0 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(4 * Tile.TileSize, 0 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(5 * Tile.TileSize, 0 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        SetAnimation(frames);
                         movement.X = 0;
                         movement.Y = PlayerMovementSpeed;
                     }
@@ -84,9 +118,13 @@ namespace BomberGameProject.Classes
                 }
                 if (isMoveLeft)
                 {
-                    if (CheckLeftTiles())
+                    if (CheckTile(TilePositionType.LEFT))
                     {
-                        SetAnimation(0, 0, 3);
+                        var frames = new List<AnimationFrame>();
+                        frames.Add(new AnimationFrame(new Point(0 * Tile.TileSize, 0 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(1 * Tile.TileSize, 0 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(2 * Tile.TileSize, 0 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        SetAnimation(frames);
                         movement.X = -1 * PlayerMovementSpeed;
                         movement.Y = 0;
                     }
@@ -97,18 +135,22 @@ namespace BomberGameProject.Classes
                 }
                 if (isMoveRight)
                 {
-                    if (CheckRightTiles())
+                    if (CheckTile(TilePositionType.RIGHT))
                     {
-                        SetAnimation(1, 0, 3);
+                        var frames = new List<AnimationFrame>();
+                        frames.Add(new AnimationFrame(new Point(0 * Tile.TileSize, 1 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(1 * Tile.TileSize, 1 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        frames.Add(new AnimationFrame(new Point(2 * Tile.TileSize, 1 * Tile.TileSize), Tile.TileSize, Tile.TileSize));
+                        SetAnimation(frames);
                         movement.X = PlayerMovementSpeed;
                         movement.Y = 0;
                     }
                     else
                     {
                         StopMovement();
-                    }
+                    } 
                 }
-                HandleAnimation();
+                HandleAnimation((float)0.005);
             }
             else
             {
@@ -121,32 +163,51 @@ namespace BomberGameProject.Classes
             movement.X = 0;
             movement.Y = 0;
             rectangleShape.TextureRect = new IntRect(
-                PlayerTextureHorizontalNumber * Tile.TileSize, 
-                PlayerTextureVerticalNumber * Tile.TileSize, 
-                Tile.TileSize, 
+                PlayerTextureHorizontalNumber * Tile.TileSize,
+                PlayerTextureVerticalNumber * Tile.TileSize,
+                Tile.TileSize,
                 Tile.TileSize
             );
         }
 
-        private bool CheckLeftTiles()
+        private Point GetPlayerCoordinates()
         {
             var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
-            var playerTileY =(int)Math.Round(Position.Y / Tile.TileSize);
+            var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
+            return new Point(playerTileX, playerTileY);
+        }
 
-            var tileX = playerTileX - 1;
-            var tileY = playerTileY;
+        private Point GetTileCoordinates(Point playerCoordinates, TilePositionType tilePositionType)
+        {
+            switch (tilePositionType)
+            {
+                case TilePositionType.DOWN:
+                    return new Point(playerCoordinates.X, playerCoordinates.Y + 1);
+                case TilePositionType.UP:
+                    return new Point(playerCoordinates.X, playerCoordinates.Y - 1);
+                case TilePositionType.LEFT:
+                    return new Point(playerCoordinates.X - 1, playerCoordinates.Y);
+                case TilePositionType.RIGHT:
+                    return new Point(playerCoordinates.X + 1, playerCoordinates.Y);
+            }
+            return Point.Empty;
+        }
 
-            var tile = gameBoard.GetTile(tileX, tileY);
+        private bool CheckTile(TilePositionType tilePositionType)
+        {
+            var playerCoordinates = GetPlayerCoordinates();
+            var tileCoordinates = GetTileCoordinates(playerCoordinates, tilePositionType);
+            var tile = gameBoard.GetTile(tileCoordinates);
 
             if (tile == null)
             {
                 return false;
             }
 
-            if (tile.TileType == TileType.DESTROYED_BLOCK || tile.TileType == TileType.INDESTRUCTIBLE_BLOCK)
+            if (tile.Type == TileType.DESTROYED_BLOCK || tile.Type == TileType.INDESTRUCTIBLE_BLOCK)
             {
                 var floatPlayerRect = new FloatRect(Position.X, Position.Y, Tile.TileSize, Tile.TileSize);
-                var floatTileRect = new FloatRect(tileX * Tile.TileSize, tileY * Tile.TileSize, Tile.TileSize, Tile.TileSize);
+                var floatTileRect = new FloatRect(tileCoordinates.X * Tile.TileSize, tileCoordinates.Y * Tile.TileSize, Tile.TileSize, Tile.TileSize);
 
                 if (!floatPlayerRect.Intersects(floatTileRect))
                 {
@@ -157,91 +218,18 @@ namespace BomberGameProject.Classes
             return true;
         }
 
-        private bool CheckUpTiles()
+        public override void Draw(RenderTarget target, RenderStates states)
         {
-            var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
-            var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
-
-            var tileX = playerTileX;
-            var tileY = playerTileY - 1;
-
-            var tile = gameBoard.GetTile(tileX, tileY);
-
-            if (tile == null)
-            {
-                return false;
-            }
-
-            if (tile.TileType == TileType.DESTROYED_BLOCK || tile.TileType == TileType.INDESTRUCTIBLE_BLOCK)
-            {
-                var floatPlayerRect = new FloatRect(Position.X, Position.Y, Tile.TileSize, Tile.TileSize);
-                var floatTileRect = new FloatRect(tileX * Tile.TileSize, tileY * Tile.TileSize, Tile.TileSize, Tile.TileSize);
-
-                if (!floatPlayerRect.Intersects(floatTileRect))
-                {
-                    return true;
-                }
-                return false;
-            }
-            return true;
+            states.Transform *= Transform;
+            target.Draw(rectangleShape, states);
         }
 
-        private bool CheckDownTiles()
+        public void Destroy()
         {
-            var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
-            var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
+            rectangleShape.Dispose();
+            rectangleShape = null;
 
-            var tileX = playerTileX;
-            var tileY = playerTileY + 1;
-
-            var tile = gameBoard.GetTile(tileX, tileY);
-
-            if (tile == null)
-            {
-                return false;
-            }
-
-            if (tile.TileType == TileType.DESTROYED_BLOCK || tile.TileType == TileType.INDESTRUCTIBLE_BLOCK)
-            {
-                var floatPlayerRect = new FloatRect(Position.X, Position.Y, Tile.TileSize, Tile.TileSize);
-                var floatTileRect = new FloatRect(tileX * Tile.TileSize, tileY * Tile.TileSize, Tile.TileSize, Tile.TileSize);
-
-                if (!floatPlayerRect.Intersects(floatTileRect))
-                {
-                    return true;
-                }
-                return false;
-            }
-            return true;
-        }
-
-        private bool CheckRightTiles()
-        {
-            var playerTileX = (int)Math.Round(Position.X / Tile.TileSize);
-            var playerTileY = (int)Math.Round(Position.Y / Tile.TileSize);
-
-            var tileX = playerTileX + 1;
-            var tileY = playerTileY;
-
-            var tile = gameBoard.GetTile(tileX, tileY);
-
-            if (tile == null)
-            {
-                return false;
-            }
-
-            if (tile.TileType == TileType.DESTROYED_BLOCK || tile.TileType == TileType.INDESTRUCTIBLE_BLOCK)
-            {
-                var floatPlayerRect = new FloatRect(Position.X, Position.Y, Tile.TileSize, Tile.TileSize);
-                var floatTileRect = new FloatRect(tileX * Tile.TileSize, tileY * Tile.TileSize, Tile.TileSize, Tile.TileSize);
-
-                if (!floatPlayerRect.Intersects(floatTileRect))
-                {
-                    return true;
-                }
-                return false;
-            }
-            return true;
+            gameBoard = null;
         }
     }
 }

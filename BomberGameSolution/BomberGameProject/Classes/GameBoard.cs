@@ -1,12 +1,15 @@
-﻿using SFML.Graphics;
+﻿using BomberGameProject.Classes;
+using Microsoft.VisualBasic;
+using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 
 namespace BomberGame.Classes
 {
-    public class GameBoard : Transformable, Drawable
+    public class GameBoard : GameObject, IDisposable
     {
         private Tile[][] tiles;
         public int boardSize { get; private set; }
@@ -68,16 +71,29 @@ namespace BomberGame.Classes
             tiles[x][y].Position = new Vector2f(x * Tile.TileSize, y * Tile.TileSize);
         }
 
-        public Tile GetTile(int x, int y)
+        public Tile GetTile(Point tileCoordinates)
         {
-            if (x > -1 && x < boardSize && y > -1 && y < boardSize)
+            if (tileCoordinates.X > -1 && tileCoordinates.X < boardSize && tileCoordinates.Y > -1 && tileCoordinates.Y < boardSize)
             {
-                return tiles[x][y];
+                return tiles[tileCoordinates.X][tileCoordinates.Y];
             }
             return null;
         }
 
-        public void Draw(RenderTarget target, RenderStates states)
+        public void Clear()
+        {
+            for (int i = 0; i < boardSize; i++)
+            {
+                for (int j = 0; i < boardSize; i++)
+                {
+                    tiles[i][j].Destroy();
+                    tiles[i][j] = null;
+                }
+            }
+            boardSize = 0;
+        }
+
+        public override void Draw(RenderTarget target, RenderStates states)
         {
             for (int i = 0; i < boardSize; i++)
             {

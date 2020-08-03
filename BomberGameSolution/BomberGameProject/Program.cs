@@ -2,6 +2,7 @@
 using SFML.Graphics;
 using SFML.Window;
 using System;
+using System.Threading;
 using EventHandler = BomberGame.Classes.EventHandler;
 using VideoMode = SFML.Window.VideoMode;
 
@@ -13,7 +14,7 @@ namespace BomberGame
         private const int WindowWidth = 800;
         private const int WindowHeight = 600;
         private const bool VerticalSyncEnabled = true;
-        private static readonly Color ClearColor = Color.White;
+        private static readonly Color ClearColor = Color.Green;
 
         private const int GameBoardSize = 25;
 
@@ -22,15 +23,17 @@ namespace BomberGame
         private static EventHandler eventHandler;
         private static GameHandler gameHandler;
 
+        private Thread gameThread;
+
         static void Main()
         {
             Window = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), WindowName);
             Window.SetVerticalSyncEnabled(VerticalSyncEnabled);
+            Window.KeyPressed += Window_KeyPressed;
 
             ContentHandler.Load();
 
             eventHandler = new EventHandler(Window);
-            Window.KeyPressed += Window_KeyPressed;
 
             gameHandler = new GameHandler(GameBoardSize);
 
@@ -46,9 +49,10 @@ namespace BomberGame
 
         private static void Window_KeyPressed(object sender, KeyEventArgs e)
         {
-            if (e.Code == Keyboard.Key.R)
+            if (Keyboard.IsKeyPressed(Keyboard.Key.R))
             {
-                gameHandler = new GameHandler(GameBoardSize);
+                gameHandler.CloseGame();
+                gameHandler = new GameHandler(25);
             }
         }
     }

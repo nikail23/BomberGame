@@ -217,7 +217,6 @@ C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\bin\Debug\
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\csfml-System.dll
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\csfml-Window.dll
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\bin\Debug\netcoreapp3.1\runtimes\win-x86\native\openal32.dll
-C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.csprojAssemblyReference.cache
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.AssemblyInfoInputs.cache
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.AssemblyInfo.cs
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.csproj.CoreCompileInputs.cache
@@ -225,3 +224,4 @@ C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.dll
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.pdb
 C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.genruntimeconfig.cache
+C:\Users\User\Desktop\BomberGame\BomberGameSolution\BomberGameProject\obj\Debug\netcoreapp3.1\BomberGameProject.csprojAssemblyReference.cache
