@@ -6,9 +6,9 @@ using System.Drawing;
 
 namespace BomberGame.Classes
 {
-    public delegate void AddBombDelegate(Point coordinates);
+    public delegate void AddBombDelegate(Point coordinates, int power);
     public delegate void DeleteBombDelegate(Bomb bomb);
-    public delegate void AddExplosionDelegate(Point coordinates);
+    public delegate void AddExplosionDelegate(Point coordinates, int power);
     public delegate void DeleteExplosionDelegate(Explosion explosion);
 
     public class GameHandler
@@ -32,32 +32,38 @@ namespace BomberGame.Classes
             player.Spawn();
         }
 
-        private void CreateBomb(Point bombCoordinates)
+        private void CreateBomb(Point bombCoordinates, int bombPower)
         {
             if (CheckActiveBombs(bombCoordinates))
             {
-                var bomb = new Bomb(bombCoordinates);
+                var bomb = new Bomb(bombCoordinates, bombPower);
                 bomb.DeleteBombEvent += DeleteBomb;
                 bomb.AddExplosionEvent += CreateExplosion;
                 bombs.Add(bomb);
             }
         }
 
-        private void CreateExplosion(Point coordinates)
+        private void CreateExplosion(Point coordinates, int power)
         {
-            var explosion = new Explosion(coordinates, gameBoard);
-            explosion.DeleteBombEvent += DeleteExplosion;
+            var explosion = new Explosion(coordinates, power, gameBoard);
+            explosion.DeleteExplosionEvent += DeleteExplosion;
             explosions.Add(explosion);
         }
 
         private void DeleteBomb(Bomb bomb)
         {
-            bombs.Remove(bomb);
+            lock (bombs)
+            {
+                bombs.Remove(bomb);
+            }
         }
 
         private void DeleteExplosion(Explosion explosion)
         {
-            explosions.Remove(explosion);
+            lock (explosions)
+            {
+                explosions.Remove(explosion);
+            }
         }
 
         private bool CheckActiveBombs(Point newBombCoordinates)
@@ -103,36 +109,60 @@ namespace BomberGame.Classes
 
         public void Draw()
         {
-            Program.Window.Draw(gameBoard);
-            foreach (var bomb in bombs)
+            lock (gameBoard)
             {
-                Program.Window.Draw(bomb);
+                Program.Window.Draw(gameBoard);
             }
-            foreach (var explosion in explosions)
+            lock (bombs)
             {
-                Program.Window.Draw(explosion);
+                foreach (var bomb in bombs)
+                {
+                    Program.Window.Draw(bomb);
+                }
             }
-            Program.Window.Draw(player);
+            lock (explosions)
+            {
+                foreach (var explosion in explosions)
+                {
+                    Program.Window.Draw(explosion);
+                }
+            }
+            lock (player)
+            {
+                Program.Window.Draw(player);
+            }
         }
 
         public void CloseGame()
         {
-            gameBoard.Clear();
-            gameBoard = null;
-            player.Destroy();
-            player = null;
-            foreach (var bomb in bombs)
+            lock (gameBoard)
             {
-                bomb.Destroy();
+                gameBoard.Clear();
+                gameBoard = null;
             }
-            bombs.Clear();
-            bombs = null;
-            foreach (var explosion in explosions)
+            lock (player)
             {
-                explosion.Destroy();
+                player.Destroy();
+                player = null;
             }
-            explosions.Clear();
-            explosions = null;
+            lock (bombs)
+            {
+                foreach (var bomb in bombs)
+                {
+                    bomb.Destroy();
+                }
+                bombs.Clear();
+                bombs = null;
+            }
+            lock (explosions)
+            {
+                foreach (var explosion in explosions)
+                {
+                    explosion.Destroy();
+                }
+                explosions.Clear();
+                explosions = null;
+            }
         }
     }
 }

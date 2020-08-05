@@ -14,18 +14,20 @@ namespace BomberGameProject.Classes
     {
         private const int BombTextureHorizontalNumber = 0;
         private const int BombTextureVerticalNumber = 3;
-        private const int BombDetonationTime = 3;
+        private const int BombDetonationTime = 2;
 
         public event DeleteBombDelegate DeleteBombEvent;
         public event AddExplosionDelegate AddExplosionEvent;
 
         private Thread animationThread;
         private bool isAnimating;
+        private int power;
 
         public Point Coordinates { get; private set; }
 
-        public Bomb(Point coordinates)
+        public Bomb(Point coordinates, int power)
         {
+            this.power = power;
             animationThread = new Thread(StartAnimation);
             animationThread.IsBackground = true;
 
@@ -56,7 +58,11 @@ namespace BomberGameProject.Classes
         {
             while (isAnimating)
             {
-                HandleAnimation((float)0.0015);
+                HandleStaticAnimation(2000 / 3);
+                if (currentFrameNumber >= frames.Count - 1)
+                {
+                    break;
+                }
             }
         }
 
@@ -70,7 +76,7 @@ namespace BomberGameProject.Classes
 
         private void CreateExplosion()
         {
-            AddExplosionEvent(Coordinates);
+            AddExplosionEvent(Coordinates, power);
         }
 
         private void WaitForDetonatingTime(int detonateTime)

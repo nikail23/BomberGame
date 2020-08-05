@@ -10,9 +10,9 @@ namespace BomberGameProject.Classes.AbstractClasses
 {
     public abstract class AnimatedGameObject : TexturedGameObject
     {
-        private Clock clock;
-        private List<AnimationFrame> frames;
-        private float currentFrameNumber;
+        protected Clock clock;
+        protected List<AnimationFrame> frames;
+        protected double currentFrameNumber;
 
         protected float Time 
         { 
@@ -64,9 +64,27 @@ namespace BomberGameProject.Classes.AbstractClasses
             return true;
         }
 
-        protected void HandleAnimation(float speedNumber)
+        protected void HandleDynamicAnimation(double speed)
         {
-            currentFrameNumber += Time * speedNumber;
+            currentFrameNumber += Time * speed;
+            if (currentFrameNumber > frames.Count - 0.5)
+            {
+                currentFrameNumber = 0;
+            }
+
+            var currentFrame = frames[(int)currentFrameNumber];
+
+            if (rectangleShape != null)
+            {
+                rectangleShape.TextureRect = new IntRect(currentFrame.Coordinates.X, currentFrame.Coordinates.Y, currentFrame.Width, currentFrame.Height);
+            }
+        }
+
+        protected void HandleStaticAnimation(double frameRate)
+        {
+            clock.Restart();
+            while (clock.ElapsedTime.AsMilliseconds() < frameRate) { }
+            currentFrameNumber += 1;
             if (currentFrameNumber > frames.Count - 0.5)
             {
                 currentFrameNumber = 0;

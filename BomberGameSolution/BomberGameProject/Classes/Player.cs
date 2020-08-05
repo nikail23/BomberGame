@@ -28,12 +28,14 @@ namespace BomberGameProject.Classes
 
         public Vector2f StartPosition;
         private Vector2f movement;
-        private int maxActiveBombsCount;
 
         private GameBoard gameBoard;
+        private int bombPower;
 
         public Player(GameBoard gameBoard)
         {
+            bombPower = 2;
+
             SetTexture(
                 ContentHandler.Texture,
                 PlayerTextureHorizontalNumber * Tile.TileSize,
@@ -43,7 +45,6 @@ namespace BomberGameProject.Classes
             );
 
             this.gameBoard = gameBoard;
-            maxActiveBombsCount = 1;
         }
 
         public void Spawn()
@@ -69,7 +70,7 @@ namespace BomberGameProject.Classes
         private void PlaceBomb()
         {
             var playerCoordinates = GetPlayerCoordinates();
-            AddBombEvent(playerCoordinates);
+            AddBombEvent(playerCoordinates, bombPower);
             
         }
 
@@ -150,7 +151,7 @@ namespace BomberGameProject.Classes
                         StopMovement();
                     } 
                 }
-                HandleAnimation((float)0.005);
+                HandleDynamicAnimation(0.005);
             }
             else
             {

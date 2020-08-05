@@ -4,7 +4,9 @@ using SFML.Graphics;
 using SFML.System;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using System.Threading;
 
 namespace BomberGame.Classes
 {
@@ -15,7 +17,7 @@ namespace BomberGame.Classes
         DESTROYED_BLOCK
     }
 
-    public class Tile : TexturedGameObject
+    public class Tile : AnimatedGameObject
     {
         public static int TileSize = 16;
 
@@ -28,18 +30,47 @@ namespace BomberGame.Classes
 
         public TileType Type { get; private set; }
 
+        private Thread animationThread;
+        private bool isAnimating;
+
         public Tile(TileType tileType)
         {
+            frames = new List<AnimationFrame>();
+            animationThread = new Thread(Animate);
             rectangleShape = new RectangleShape(new Vector2f(TileSize, TileSize));
 
-            this.Type = tileType;
+            SetTile(tileType);
+        }
+
+        public void StartAnimation()
+        {
+            isAnimating = true;
+            animationThread.Start();
+        }
+
+        private void Animate()
+        {
+            while (isAnimating)
+            {
+                HandleStaticAnimation(350);
+                if (currentFrameNumber >= frames.Count - 1)
+                {
+                    SetTile(TileType.GRASS);
+                    isAnimating = false;
+                    break;
+                }
+            }
+        }
+        
+        private void SetTexture(TileType tileType)
+        {
             switch (tileType)
             {
                 case TileType.GRASS:
                     SetTexture(
-                        ContentHandler.Texture, 
+                        ContentHandler.Texture,
                         GrassTileHorizontalNumber * TileSize,
-                        GrassTileVerticalNumber * TileSize, 
+                        GrassTileVerticalNumber * TileSize,
                         TileSize,
                         TileSize
                     );
@@ -61,8 +92,20 @@ namespace BomberGame.Classes
                         TileSize,
                         TileSize
                     );
+                    frames.Add(new AnimationFrame(new Point(5 * TileSize, 3 * TileSize), TileSize, TileSize));
+                    frames.Add(new AnimationFrame(new Point(6 * TileSize, 3 * TileSize), TileSize, TileSize));
+                    frames.Add(new AnimationFrame(new Point(7 * TileSize, 3 * TileSize), TileSize, TileSize));
+                    frames.Add(new AnimationFrame(new Point(8 * TileSize, 3 * TileSize), TileSize, TileSize));
+                    frames.Add(new AnimationFrame(new Point(9 * TileSize, 3 * TileSize), TileSize, TileSize));
+                    frames.Add(new AnimationFrame(new Point(10 * TileSize, 3 * TileSize), TileSize, TileSize));
                     break;
             }
+        }
+
+        public void SetTile(TileType tileType)
+        {
+            Type = tileType;
+            SetTexture(Type);
         }
 
         public void Destroy()

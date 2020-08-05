@@ -80,6 +80,16 @@ namespace BomberGame.Classes
             return null;
         }
 
+        public void DestroyTile(Point tileCoordinates)
+        {
+            var tile = GetTile(tileCoordinates);
+
+            if (tile.Type == TileType.DESTROYED_BLOCK)
+            {
+                tile.SetTile(TileType.GRASS);
+            }
+        }
+
         public void Clear()
         {
             for (int i = 0; i < boardSize; i++)

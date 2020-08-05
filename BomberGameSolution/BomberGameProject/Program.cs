@@ -23,12 +23,11 @@ namespace BomberGame
         private static EventHandler eventHandler;
         private static GameHandler gameHandler;
 
-        private Thread gameThread;
-
         static void Main()
         {
             Window = new RenderWindow(new VideoMode(WindowWidth, WindowHeight), WindowName);
             Window.SetVerticalSyncEnabled(VerticalSyncEnabled);
+            Window.SetFramerateLimit(60);
             Window.KeyPressed += Window_KeyPressed;
 
             ContentHandler.Load();
